@@ -1,6 +1,11 @@
 import express  , {Express} from 'express';
 const app  : Express= express();
 const port = 3000;
+import userRoutes from './routes/userRoutes';
+app.use("/api/v1/user/auth" , userRoutes); 
+
+
+
 app.get('/', (req , res ) =>  {
     res.send('Hello World!');
 });
