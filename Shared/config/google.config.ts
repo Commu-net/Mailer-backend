@@ -4,15 +4,18 @@ import dotenv from "dotenv";
 import User from "../models/user.model";
 import Apperror from "../utils/Apperror.util.js";
 import { Request } from 'express';
-
-dotenv.config();
-
+dotenv.config({
+  path: "../.env",
+});
+console.log(process.env.GOOGLE_CLIENT_ID);
+console.log(process.env.GOOGLE_CLIENT_SECRET);
+console.log(process.env.DOMAIN);
 const GoogleStrategy = Strategy;
 
 passport.use(new GoogleStrategy <StrategyOptions>  ({
-    clientID: process.env.GOOGLE_CLIENT_ID as string,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    callbackURL: `${process.env.DOMAIN}/api/v1/user/auth/google/callback`,
+    clientID: process.env.GOOGLE_CLIENT_ID as any,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET as any,
+    callbackURL: `${process.env.DOMAIN}/api/v1/user/auth/google/callback` as string ,
   },
   async function(request: Request, accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
     try {
@@ -31,8 +34,8 @@ passport.use(new GoogleStrategy <StrategyOptions>  ({
         await user.save();
         done(null, user);
       }
-    } catch (error) {
-      return next(new Apperror("Error in making a new User", 400));
+    } catch (error:any) {
+      done(new Apperror(error.message, 400), null);
     }
   }
 ));

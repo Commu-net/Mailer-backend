@@ -1,5 +1,7 @@
+
+import { Response } from "express";
 class ApiResponse {
-    constructor( res  :Response , statusCode: Number, message : String, data : Object) {
+    constructor( res  :Response , statusCode: number, message : string, data : object) {
 
 
         res.status(statusCode).json({

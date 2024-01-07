@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config({
     path : "../.env"
 });
-import "./config/google.config"; 
+
 import connectToDb from "./config/mongo.db.config";
 connectToDb(); 
 
