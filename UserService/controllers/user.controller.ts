@@ -1,82 +1,91 @@
+import passport from "passport"; 
+import {Request , Response , NextFunction} from "express"; 
+import Apperror from "../../Shared/utils/Apperror.util";
+import ApiResponse from "../../Shared/utils/ApiResponse.util";
 
-const authGoogle = async (req , res, next ) => {
+import session from 'express-session';
+const authGoogle = async (req : Request , res :  Response, next : NextFunction ) => {
     try {
 
         passport.authenticate("google", {scope: ["profile" ,"email"  ]})(req,res , next) ;
         
-    } catch (error) {
+    } catch (error : any) {
         return next (new Apperror(error.message , 400));
     }
 
 }
 
-const googleCallback  =  (req ,res , next ) => {
+const googleCallback  =  (req : Request ,res : Response , next : NextFunction ) => {
     try {
         
         passport.authenticate("google", {
             successRedirect: `${process.env.DOMAIN}/api/v1/user/auth/google/success`,
             failureRedirect: `${process.env.DOMAIN}/api/v1/user/auth/google/failure`,
         })(req, res, next);
-    } catch (error) {
+    } catch (error : any) {
         return next(new Apperror(error.message , 400));
     }
 }
 
-const googleSuccess = (req , res , next ) => {
+const googleSuccess = (req : Request , res : Response , next : NextFunction ) => {
     try {
         console.log(req.user)   
         res.redirect(`${process.env.CLIENT_URL}`)
-    } catch (error) {
+    } catch (error : any) {
         return next (new Apperror(error.message , 400));
     }
 }
 
 
 
-const googleFailure = (req , res , next ) => {
+const googleFailure = (  req : Request, res : Response , next : NextFunction ) => {
     return next (new Apperror("You are not authenticated" , 400));
 }
 
-const logout  = ( req ,res, next ) => {
+
+interface RequestWithSession extends Request {
+    session: session.Session & Partial<session.SessionData> & { user?: any };
+  }
+const logout = (req: RequestWithSession, res: Response, next: NextFunction) => {
     try {
         if (req.session) {
-            req.session.destroy((err) => {
+            req.session.destroy((err: Error) => {
               if (err) {
                 console.log(err);
               }
-              req.user = null;
+              req.user = undefined;
             });
-            req.logout((err) => {
+            req.logout((err: Error) => {
                 if (err) {
                     console.log(err);
                 }
             });
-            return new ApiResponse(res , 200 , "Success" , "You are logged out");
+            return new ApiResponse(res , 200 , "Success" , {message : "You are logged out"});
           } else {
-            req.logout((err) => {
+            req.logout((err: Error) => {
               if (err) {
                 console.log(err);
               }
             });
-            return new ApiResponse(res , 200 , "Success" , "You are logged out");
+            return new ApiResponse(res , 200 , "Success" , {message : "You are logged out"});
           }  
-    } catch (error) {
-        return next (new Apperror(error.message , 400));
+    } catch (error : any) {
+        return next(new Apperror(error.message , 400));
     }
 }
 
 
 
-const getUserData = (req, res, next ) => { 
+const getUserData = (req : Request , res : Response, next : NextFunction ) => { 
     try {
         if(req.user) {
             console.log(req.user) ;
             
             return new ApiResponse(res , 200 , "Success" , req.user);
         }else{
-            return new ApiResponse(res , 400 , "failure" , "No user data");
+            return new ApiResponse(res , 400 , "failure" , {message : "No user data"});
         }
-    } catch (error) {
+    } catch (error :any) {
         return next(new Apperror(error.message , 400));
     }
 }
