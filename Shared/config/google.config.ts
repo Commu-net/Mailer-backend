@@ -1,20 +1,20 @@
-import { Strategy, StrategyOptions, VerifyCallback } from "passport-google-oauth2";
+import { Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oauth20";
 import passport from "passport";
 import dotenv from "dotenv";
-import User from "../models/user.model";
+import User , { userInterface } from "../models/user.model";
 import Apperror from "../utils/Apperror.util.js";
 import { Request } from 'express';
+
 dotenv.config({
   path: "../.env",
 });
 console.log(process.env.GOOGLE_CLIENT_ID);
 console.log(process.env.GOOGLE_CLIENT_SECRET);
 console.log(process.env.DOMAIN);
-const GoogleStrategy = Strategy;
 
-passport.use(new GoogleStrategy <StrategyOptions>  ({
-    clientID: process.env.GOOGLE_CLIENT_ID as any,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET as any,
+passport.use(new GoogleStrategy<userInterface>({
+    clientID: process.env.GOOGLE_CLIENT_ID as string,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     callbackURL: `${process.env.DOMAIN}/api/v1/user/auth/google/callback` as string ,
   },
   async function(request: Request, accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {

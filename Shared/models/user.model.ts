@@ -37,6 +37,14 @@ const userModel = new  mongoose.Schema({
     }
     
 })
-
+interface userI {
+    name: string;
+    email: string;
+    sub?: number;
+    picture?: string;
+    domain?: string;
+    googleId?: string;
+}
 
 export default mongoose.model("User" , userModel) ;
+export type userInterface = userI;
