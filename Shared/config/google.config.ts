@@ -2,7 +2,7 @@ import { Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oaut
 import passport from "passport";
 import dotenv from "dotenv";
 import User , { userInterface } from "../models/user.model";
-import Apperror from "../utils/Apperror.util.js";
+import Apperror from "../utils/Apperror.util";
 import { Request } from 'express';
 
 dotenv.config({
