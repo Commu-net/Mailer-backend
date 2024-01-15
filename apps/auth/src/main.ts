@@ -1,12 +1,12 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { connectToDb } from '@auth/mongo';
-
-
 dotenv.config({
   path: '../../../.env',
 
 });
+import { connectToDb } from '@auth/mongo';
+
+
 
 connectToDb();
 
