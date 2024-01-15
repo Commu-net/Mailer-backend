@@ -1,0 +1,23 @@
+{
+  "name": "mongo",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/mongo/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/mongo",
+        "main": "libs/mongo/src/index.ts",
+        "tsConfig": "libs/mongo/tsconfig.lib.json",
+        "assets": ["libs/mongo/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

@@ -1,4 +1,14 @@
 import express from 'express';
+import dotenv from 'dotenv';
+import { connectToDb } from '@auth/mongo';
+
+
+dotenv.config({
+  path: '../../../.env',
+
+});
+
+connectToDb();
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
