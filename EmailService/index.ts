@@ -2,16 +2,21 @@ import express ,{ Express , Request , Response} from "express";
 import * as dotenv from 'dotenv';
 import router from './routes/emailRoutes';
 import errorMiddleware from "./middlewares/errorMiddleware";
+import connectToDb from "./config/mongo.db.config";
 
-dotenv.config();
+dotenv.config(
+    {
+        path : "../.env"
+    }
+);
 
 const app : Express = express();
-const PORT : string | 8080 = process.env.PORT || 8080;
+const PORT : string = process.env.PORT || "8080";
 
 app.use("/api/v1",router);
 
 app.get("/",(req : Request , res : Response) => {
-    return res.json("Hellow");
+    return res.json("Hello");
 });
 
 app.use(errorMiddleware);

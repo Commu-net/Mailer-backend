@@ -38,11 +38,9 @@ const userModel = new  mongoose.Schema({
     acessToken : {
         type : String,
     },
-
     rToken : {
         type : String
     }
-    
 })
 interface userI{
     name: string;
@@ -51,7 +49,7 @@ interface userI{
     picture?: string;
     domain?: string;
     googleId?: string;
-    accessToken? : string
+    acessToken? : string
     rToken? : string
 }
 

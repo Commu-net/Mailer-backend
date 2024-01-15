@@ -30,6 +30,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 // app.use(cors())
+app.use("/api/v1/user", userRoutes);
 
 dotenv.config({
   path: "../.env",
@@ -40,12 +41,17 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     callbackURL: `${process.env.DOMAIN}/api/v1/user/auth/google/callback` as string,
     passReqToCallback: true, 
+    
   },
   async function(request: Request, accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
     try {
       const ifuserExists = await User.findOne({ googleId: profile.id });
-
+      console.log(refreshToken);
+      console.log(accessToken);
       if (ifuserExists) {
+        ifuserExists.acessToken = accessToken;
+        ifuserExists.rToken = refreshToken;
+        await ifuserExists.save();
         done(null, ifuserExists);
       } else {
         const user = await User.create({
@@ -55,7 +61,8 @@ passport.use(new GoogleStrategy({
           sub: profile.sub,
           domain: profile.domain,
           googleId: profile.id,
-          acessToken : accessToken
+          acessToken : accessToken,
+          rToken : refreshToken
         });
         await user.save();
         done(null, user);
@@ -84,8 +91,6 @@ passport.deserializeUser(async function(id: any, done: (error: any, user?: any) 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello World!");
 });
-
-app.use("/api/v1/user", userRoutes  );
 
 
 app.use("*", (req: Request, res: Response) => {

@@ -1,18 +1,31 @@
-import passport from "passport"; 
+import passport, { AuthenticateOptions } from "passport"; 
 import {Request , Response , NextFunction} from "express"; 
 import Apperror from "../../Shared/utils/Apperror.util";
 import ApiResponse from "../../Shared/utils/ApiResponse.util";
-
 import session from 'express-session';
-const authGoogle = async (req : Request , res :  Response, next : NextFunction ) => {
+
+interface AuthOptions extends AuthenticateOptions{
+    accessType? : String,
+    approvalPrompt? : String
+}
+
+
+const authGoogle = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-        passport.authenticate("google", {scope: ["profile" ,"email"  ]})(req,res , next) ;
-        
-    } catch (error : any) {
-        return next (new Apperror(error.message , 400));
+        passport.authenticate('google', {
+            scope: ["profile" ,"email","https://www.googleapis.com/auth/gmail.compose"],
+            accessType: 'offline',
+            approvalPrompt: 'force'
+        } as AuthOptions)(req , res , next);
+        //     passport.authenticate('google', {
+        //         scope:
+        //             ['email', 'profile']
+        //     }
+        // )(req,res , next);
     }
-
+     catch (error: any) {
+        return next(new Apperror(error.message, 400));
+    }
 }
 
 const googleCallback  =  (req : Request ,res : Response , next : NextFunction ) => {

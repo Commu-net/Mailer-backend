@@ -23,6 +23,8 @@ passport.use(new GoogleStrategy({
       const ifuserExists = await User.findOne({ googleId: profile.id });
     
       if (ifuserExists) {
+        ifuserExists.acessToken = accessToken;
+        ifuserExists.save();
         done(null, ifuserExists);
       } else {
         console.log(accessToken);

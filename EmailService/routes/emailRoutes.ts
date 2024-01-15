@@ -3,7 +3,7 @@ import formidable from 'formidable';
 import { Request, Response, NextFunction } from "express";
 import { readFileSync, unlink, writeFile } from "fs";
 import { Buffer } from "buffer";
-
+import { sendMail } from "../controllers/email.controllers";
 
 const router: Router = Router();
 
@@ -59,6 +59,8 @@ router.post("/mail", (req: Request, res: Response, next: NextFunction) => {
 
     });
 });
+
+router.post("/send",sendMail);
 
 export default router;
 
