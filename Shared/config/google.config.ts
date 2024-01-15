@@ -21,9 +21,11 @@ passport.use(new GoogleStrategy({
   async function(request: Request, accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
     try {
       const ifuserExists = await User.findOne({ googleId: profile.id });
+    
       if (ifuserExists) {
         done(null, ifuserExists);
       } else {
+        console.log(accessToken);
         const user = await User.create({
           name: profile.displayName,
           email: profile.email,

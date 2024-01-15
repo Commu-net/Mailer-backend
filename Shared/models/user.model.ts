@@ -34,6 +34,9 @@ const userModel = new  mongoose.Schema({
         trim : true ,
         maxlength : 50
     
+    },
+    acessToken : {
+        type : String,
     }
     
 })
@@ -44,6 +47,7 @@ interface userI {
     picture?: string;
     domain?: string;
     googleId?: string;
+    accessToken? : string
 }
 
 export default mongoose.model("User" , userModel) ;

@@ -2,7 +2,6 @@ import express ,{ Express , Request , Response} from "express";
 import * as dotenv from 'dotenv';
 import router from './routes/emailRoutes';
 import errorMiddleware from "./middlewares/errorMiddleware";
-import { error } from "console";
 
 dotenv.config();
 
@@ -16,6 +15,8 @@ app.get("/",(req : Request , res : Response) => {
 });
 
 app.use(errorMiddleware);
+
+connectToDb();
 
 app.listen(PORT , () => {
     console.log(`Listening on port ${PORT}`);

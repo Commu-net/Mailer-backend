@@ -4,7 +4,7 @@ mongoose.set("strictQuery" ,false);
 
 const connectToDb= async () => {
     await mongoose.connect(process.env.MONGO_URL || "mongodb://localhost:27017")
-        .then(() => console.log("Connected to DB"))
+        .then(() => console.log(`connected on ${process.env.MONGO_URL || "mongodb://localhost:27017"}`))
         .catch((err) => {
             console.log(err);
             process.exit(1);    

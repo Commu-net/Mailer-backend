@@ -10,6 +10,7 @@ import "../Shared/config/google.config";
 import { Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oauth2";
 import User from "../Shared/models/user.model";
 import Apperror from "../Shared/utils/Apperror.util";
+import connectToDb from "./../Shared/config/mongo.db.config";
 
 
 dotenv.config({
@@ -33,9 +34,6 @@ app.use(passport.session());
 dotenv.config({
   path: "../.env",
 });
-console.log(process.env.GOOGLE_CLIENT_ID);
-console.log(process.env.GOOGLE_CLIENT_SECRET);
-console.log(process.env.DOMAIN);
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID as string,
@@ -46,6 +44,7 @@ passport.use(new GoogleStrategy({
   async function(request: Request, accessToken: string, refreshToken: string, profile: any, done: VerifyCallback) {
     try {
       const ifuserExists = await User.findOne({ googleId: profile.id });
+
       if (ifuserExists) {
         done(null, ifuserExists);
       } else {
@@ -55,7 +54,8 @@ passport.use(new GoogleStrategy({
           picture: profile.picture,
           sub: profile.sub,
           domain: profile.domain,
-          googleId: profile.id
+          googleId: profile.id,
+          acessToken : accessToken
         });
         await user.save();
         done(null, user);
@@ -94,6 +94,8 @@ app.use("*", (req: Request, res: Response) => {
 app.use(errorMiddleware)
 
 const port = 4000;
+
+connectToDb();
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
