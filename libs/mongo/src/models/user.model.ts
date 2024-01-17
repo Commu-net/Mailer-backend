@@ -1,6 +1,4 @@
-import mongoose from "mongoose";
-
-
+import mongoose, { ObjectId } from "mongoose";
 
 const userModel = new  mongoose.Schema({
     name : {
@@ -16,7 +14,7 @@ const userModel = new  mongoose.Schema({
         maxlength : 50,
         lowercase : true ,
         unique : true ,
-       
+        
     }, 
     sub  : {
         type : Number ,
@@ -36,10 +34,32 @@ const userModel = new  mongoose.Schema({
         trim : true ,
         maxlength : 50
     
+    },
+    acessToken : {
+        type : String,
+    },
+
+    rToken : {
+        type : String
     }
     
 })
+interface userI{
+    _id :ObjectId, 
+    name: string;
+    email: string;
+    sub?: number;
+    picture?: string;
+    domain?: string;
+    googleId?: string;
+    accessToken? : string
+    rToken? : string,
+    id?:string
+}
+
+
+type userInterface = userI;
 
 
 const User  =  mongoose.model("User" , userModel) ;
-export { User } ;   
+export { User , userInterface } ;   
