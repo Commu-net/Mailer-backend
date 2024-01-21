@@ -32,8 +32,6 @@ export async function sendMail(req: AuthorizedRequest, res: Response, next: Next
 
         const mailOptions = {
             to: 'chahatsagar22003@gmail.com',
-            // cc: 'itsyash9211@gmail.com, cc2@example.com',
-            // replyTo: 'amit@labnol.org',
             subject: 'Hello world',
             text: 'This email is sent from the command line',
         };
@@ -145,7 +143,7 @@ async function sendOneMail(mail : string , senderMail : string ,fileNames : stri
                 raw: message.toString('base64')
             }
         });
-        console.log(`email send by ${mail}`);
+        console.log(`email send by ${senderMail}`);
 
     } catch (error: any) {
         console.log(error);

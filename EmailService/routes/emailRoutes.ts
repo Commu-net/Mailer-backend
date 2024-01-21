@@ -9,9 +9,9 @@ router.get("/mail", (req: Request, res: Response, next: NextFunction) => {
     return res.status(200).json("post on this route");
 });
 
-router.post("/mail", sendMass);
+router.post("/mail", sendMass);  //send mails with attachments 
 
-router.post("/send",sendMail); //send mails without attachments
+router.post("/send",sendMail); //send mail without attachments
 
 export default router;
 
