@@ -79,4 +79,5 @@ type userInterface = userI;
 type emailInterface = emailI;
 
 const User  =  mongoose.model("User" , userModel) ;
+const Emails = mongoose.model("Emails" , emailModel);
 export { User , userInterface , emailInterface} ;   
