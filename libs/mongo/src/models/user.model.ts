@@ -41,8 +41,21 @@ const userModel = new  mongoose.Schema({
 
     rToken : {
         type : String
+    },
+
+    emailSelected : {
+        type : [mongoose.Schema.Types.ObjectId],
+        ref : 'Emails'
     }
     
+});
+
+const emailModel = new mongoose.Schema({
+    email : {
+        type : String,
+        maxlength : 50,
+        unique : true
+    }
 })
 interface userI{
     _id :ObjectId, 
@@ -52,14 +65,19 @@ interface userI{
     picture?: string;
     domain?: string;
     googleId?: string;
-    accessToken? : string
+    acessToken? : string
     rToken? : string,
     id?:string
 }
 
+interface emailI{
+    email? : string
+}
+
 
 type userInterface = userI;
-
+type emailInterface = emailI;
 
 const User  =  mongoose.model("User" , userModel) ;
-export { User , userInterface } ;   
+const Emails = mongoose.model("Emails" , emailModel);
+export { User , userInterface , emailInterface} ;   
