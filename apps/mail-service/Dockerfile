@@ -6,6 +6,6 @@ COPY ../../package*.json ./
 
 RUN npm install --omit=dev
 
-COPY ../../dist/apps/auth ./
+COPY ../../dist/apps/mail-service ./
 
 CMD ["node","main.js"]

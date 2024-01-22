@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./apps/nginx-reverse-proxy/nginx.conf:/etc/nginx/nginx.conf
+
+  auth:
+    build :
+      dockerfile: ./apps/auth/Dockerfile
+      context : .
+    ports:
+      - "4000:4000"
+    environment:
+    - CLIENT_URL=${CLIENT_URL}
+    - MONGO_URL=${MONGO_URL}
+    - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+    - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+    - SESSION_SECRET=${SESSION_SECRET}
+  
+  mail-service:
+    build : 
+      context :  .
+      dockerfile: ./apps/mail-service/Dockerfile
+    ports :
+      - "3000:3000"
+    environment:
+      - CLIENT_URL=${CLIENT_URL}
+      - MONGO_URL=${MONGO_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - EMAIL_PORT=${EMAIL_PORT}
+
+    
