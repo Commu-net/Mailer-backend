@@ -4,15 +4,21 @@
 # Tip: Modify "docker-build" options in project.json to change docker build args.
 #
 # Run the container with `docker run -p 3000:3000 -t auth`.
+FROM docker.io/node:lts-alpine
 
-FROM node:lts-alpine
+ENV HOST=0.0.0.0
+ENV PORT=3000
 
 WORKDIR /app
 
-COPY ../../package*.json ./
+RUN addgroup --system auth && \
+          adduser --system -G auth auth
 
-RUN npm install --omit=dev
+COPY dist/apps/auth auth
+RUN chown -R auth:auth .
 
-COPY ../../dist/apps/auth ./
+# You can remove this install step if you build with `--bundle` option.
+# The bundled output will include external dependencies.
+RUN npm --prefix auth --omit=dev -f install
 
-CMD ["node","main.js"]
+CMD [ "node", "auth" ]

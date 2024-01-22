@@ -61,10 +61,6 @@
       "options": {
         "jestConfig": "apps/mail-service/jest.config.ts"
       }
-    },
-    "docker-build": {
-      "dependsOn": ["build"],
-      "command": "docker build -t mail-service -f ./apps/mail-service/Dockerfile ."
     }
   },
   "tags": []

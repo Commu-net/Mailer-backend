@@ -22,8 +22,7 @@
     "nodemailer-smtp-transport": "^2.7.4",
     "passport": "^0.7.0",
     "passport-google-oauth2": "^0.2.0",
-    "tslib": "^2.3.0",
-    "formidable": "^3.5.1"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@nx/esbuild": "17.2.8",
@@ -53,6 +52,7 @@
     "esbuild": "^0.19.2",
     "eslint": "~8.48.0",
     "eslint-config-prettier": "^9.0.0",
+    "formidable": "^3.5.1",
     "jest": "^29.4.1",
     "jest-environment-node": "^29.4.1",
     "nodemon": "^3.0.3",
