@@ -79,7 +79,7 @@ export async function sendMass(req: AuthorizedRequest, res: Response, next: Next
                 const filename: string = files[key][0].originalFilename;
                 const rawFile: Buffer = readFileSync(files[key][0].filepath);
 
-                await writeFileAsync(tempDirectory + `${filename}`, rawFile);
+                await writeFileAsync(tempDirectory.concat(`${filename}`), rawFile);
                 fileNames.push(filename);
             }));
 

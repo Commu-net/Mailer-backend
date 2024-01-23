@@ -24,6 +24,7 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - SESSION_SECRET=${SESSION_SECRET}
       - HOST=0.0.0.0
+      - DOMAIN=${DOMAIN}
     
     networks:
       - backend

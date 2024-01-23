@@ -10,7 +10,6 @@ interface AuthOptions extends AuthenticateOptions{
     approvalPrompt? : string
 }
 
-
 const authGoogle = async (req: Request, res: Response, next: NextFunction) => {
     try {
         passport.authenticate('google', {
