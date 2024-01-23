@@ -2,7 +2,9 @@ version: '3'
 
 services:
   web:
-    image: nginx:latest
+    build : 
+      context: .
+      dockerfile: ./apps/nginx-reverse-proxy/Dockerfile
     ports:
       - "8080:8080"
     volumes:
