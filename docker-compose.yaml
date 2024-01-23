@@ -2,15 +2,13 @@ version: '3'
 
 services:
   web:
-<<<<<<< Updated upstream
-    image: nginx:latest
-=======
     build:
       context: .
-      dockerfile: ./apps/nginx-reverse-proxy/Dockerfile
->>>>>>> Stashed changes
+      dockerfile: "./apps/nginx-reverse-proxy/Dockerfile"
     ports:
       - "8080:80"
+    networks:
+      - backend
 
   auth-service:
     container_name: "auth-service"
@@ -26,6 +24,9 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - SESSION_SECRET=${SESSION_SECRET}
       - HOST=0.0.0.0
+    
+    networks:
+      - backend
 
   mail-service:
     container_name: "mail-service"
@@ -43,3 +44,9 @@ services:
       - EMAIL_PORT=${EMAIL_PORT}
       - HOST=0.0.0.0
       - TEMP=/app/apps/mail-service/src/temp/
+
+    networks:
+      - backend
+
+networks:
+  backend:
