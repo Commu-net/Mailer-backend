@@ -2,31 +2,38 @@ version: '3'
 
 services:
   web:
+<<<<<<< Updated upstream
     image: nginx:latest
+=======
+    build:
+      context: .
+      dockerfile: ./apps/nginx-reverse-proxy/Dockerfile
+>>>>>>> Stashed changes
     ports:
-      - "8080:8080"
-    volumes:
-      - ./apps/nginx-reverse-proxy/nginx.conf:/etc/nginx/nginx.conf
+      - "8080:80"
 
-  auth:
-    build :
+  auth-service:
+    container_name: "auth-service"
+    build:
       dockerfile: ./apps/auth/Dockerfile
-      context : .
+      context: .
     ports:
-      - "4000:4000"
+      - 4000:4000
     environment:
-    - CLIENT_URL=${CLIENT_URL}
-    - MONGO_URL=${MONGO_URL}
-    - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-    - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-    - SESSION_SECRET=${SESSION_SECRET}
-  
+      - CLIENT_URL=${CLIENT_URL}
+      - MONGO_URL=${MONGO_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - HOST=0.0.0.0
+
   mail-service:
-    build : 
-      context :  .
+    container_name: "mail-service"
+    build:
+      context: .
       dockerfile: ./apps/mail-service/Dockerfile
-    ports :
-      - "3000:3000"
+    ports:
+      - 3000:3000
     environment:
       - CLIENT_URL=${CLIENT_URL}
       - MONGO_URL=${MONGO_URL}
@@ -34,5 +41,5 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - SESSION_SECRET=${SESSION_SECRET}
       - EMAIL_PORT=${EMAIL_PORT}
-
-    
+      - HOST=0.0.0.0
+      - TEMP=/app/apps/mail-service/src/temp/

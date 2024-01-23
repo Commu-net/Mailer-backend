@@ -105,7 +105,7 @@ app.use("*", (req: Request, res: Response) => {
 app.get('/', (req, res) => {
   res.send({ message: 'Hello API' });
 });
-const host = process.env.HOST ?? 'localhost';
+const host = process.env.HOST ?? '127.0.0.1';
 const port = process.env.AUTH_PORT ? Number(process.env.AUTH_PORT) : 4000;
 
 app.listen(port, host, () => {

@@ -8,4 +8,6 @@ RUN npm install --omit=dev
 
 COPY ../../dist/apps/auth ./
 
+EXPOSE 4000
+
 CMD ["node","main.js"]

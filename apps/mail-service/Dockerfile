@@ -8,4 +8,6 @@ RUN npm install --omit=dev
 
 COPY ../../dist/apps/mail-service ./
 
+EXPOSE 3000
+
 CMD ["node","main.js"]

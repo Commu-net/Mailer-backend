@@ -56,6 +56,8 @@ export async function sendMail(req: AuthorizedRequest, res: Response, next: Next
 const writeFileAsync = promisify(writeFile);
 const unlinkAsync = promisify(unlink);
 
+const tempDirectory = process.env.TEMP || `./apps/mail-service/src/temp/`
+
 export async function sendMass(req: AuthorizedRequest, res: Response, next: NextFunction) {
     const form: any = formidable({
         minFileSize: 1,
@@ -77,7 +79,7 @@ export async function sendMass(req: AuthorizedRequest, res: Response, next: Next
                 const filename: string = files[key][0].originalFilename;
                 const rawFile: Buffer = readFileSync(files[key][0].filepath);
 
-                await writeFileAsync(`./apps/mail-service/src/temp/${filename}`, rawFile);
+                await writeFileAsync(tempDirectory + `${filename}`, rawFile);
                 fileNames.push(filename);
             }));
 
@@ -95,7 +97,7 @@ export async function sendMass(req: AuthorizedRequest, res: Response, next: Next
             }));
 
             await Promise.all(fileNames.map(async (element: string) => {
-                await unlinkAsync(`./apps/mail-service/src/temp/${element}`);
+                await unlinkAsync(tempDirectory + `${element}`);
             }));
 
             return res.status(200).json({ "message": "Successful" });

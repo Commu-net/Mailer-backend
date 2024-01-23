@@ -12,7 +12,8 @@ dotenv.config(
 );
 
 const app : Express = express();
-const PORT : string = process.env.EMAIL_PORT || "8080";
+const PORT : string = process.env.EMAIL_PORT ||  "8080";
+const HOST : string = process.env.HOST || "127.0.0.1";
 
 app.use("/api/v1",router);
 
@@ -24,6 +25,6 @@ app.use(errorMiddleware);
 
 connectToDb();
 
-app.listen(PORT , () => {
+app.listen(Number(PORT) ,HOST , () => {
     console.log(`Listening on port ${PORT}`);
 });
