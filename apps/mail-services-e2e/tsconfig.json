@@ -4,14 +4,9 @@
   "include": [],
   "references": [
     {
-      "path": "./tsconfig.app.json",
-      "composite": true
-    },
-    {
       "path": "./tsconfig.spec.json"
     }
   ],
-  
   "compilerOptions": {
     "esModuleInterop": true
   }

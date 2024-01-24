@@ -1,0 +1,53 @@
+{
+  "name": "mail-services",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/mail-services/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/mail-services",
+        "main": "apps/mail-services/src/main.ts",
+        "tsConfig": "apps/mail-services/tsconfig.app.json",
+        "assets": ["apps/mail-services/src/assets"],
+        "webpackConfig": "apps/mail-services/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "mail-services:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "mail-services:build:development"
+        },
+        "production": {
+          "buildTarget": "mail-services:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/mail-services/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

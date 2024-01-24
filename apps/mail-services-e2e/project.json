@@ -1,14 +1,14 @@
 {
-  "name": "mail-service-e2e",
-  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
-  "implicitDependencies": ["mail-service"],
+  "name": "mail-services-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "implicitDependencies": ["mail-services"],
   "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
-        "jestConfig": "apps/mailer/src/apps/mail-service-e2e/jest.config.ts",
+        "jestConfig": "apps/mail-services-e2e/jest.config.ts",
         "passWithNoTests": true
       }
     },

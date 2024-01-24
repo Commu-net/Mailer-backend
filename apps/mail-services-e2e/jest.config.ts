@@ -1,7 +1,7 @@
 /* eslint-disable */
 export default {
-  displayName: 'mail-service-e2e',
-  preset: '../../../../../jest.preset.js',
+  displayName: 'mail-services-e2e',
+  preset: '../../jest.preset.js',
   globalSetup: '<rootDir>/src/support/global-setup.ts',
   globalTeardown: '<rootDir>/src/support/global-teardown.ts',
   setupFiles: ['<rootDir>/src/support/test-setup.ts'],
@@ -15,5 +15,5 @@ export default {
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../../../coverage/mail-service-e2e',
+  coverageDirectory: '../../coverage/mail-services-e2e',
 };
