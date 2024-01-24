@@ -15,10 +15,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@auth/ErrorMiddleware": ["libs/ErrorMiddlware/src/index.ts"],
       "@auth/lib": ["lib/src/index.ts"],
       "@auth/lib2": ["lib2/src/index.ts"],
       "@auth/mongo": ["libs/mongo/src/index.ts"],
       "@auth/my-lib": ["libs/my-lib/src/index.ts"],
+      "@auth/scrapper": ["libs/scrapper/src/index.ts"],
       "@auth/utils": ["libs/utils/src/index.ts"]
     }
   },
