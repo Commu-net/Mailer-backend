@@ -31,5 +31,6 @@ const HOST : string = process.env.HOST || "127.0.0.1";
 
 const server = app.listen(Number(PORT) ,HOST , () => {
     console.log(`Listening on port ${PORT}`);
+
 });
 server.on('error', console.error);
