@@ -30,10 +30,10 @@ services:
       - backend
 
   mail-service:
-    container_name: "mail-service"
+    container_name: "mail-services"
     build:
       context: .
-      dockerfile: ./apps/mail-service/Dockerfile
+      dockerfile: ./apps/mail-services/Dockerfile
     ports:
       - 3000:3000
     environment:
@@ -44,7 +44,7 @@ services:
       - SESSION_SECRET=${SESSION_SECRET}
       - EMAIL_PORT=${EMAIL_PORT}
       - HOST=0.0.0.0
-      - TEMP=/app/apps/mail-service/src/temp/
+      - TEMP_FILE=/app/apps/mail-services/src/temp/
 
     networks:
       - backend
