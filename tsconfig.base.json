@@ -21,7 +21,8 @@
       "@auth/mongo": ["libs/mongo/src/index.ts"],
       "@auth/my-lib": ["libs/my-lib/src/index.ts"],
       "@auth/scrapper": ["libs/scrapper/src/index.ts"],
-      "@auth/utils": ["libs/utils/src/index.ts"]
+      "@auth/utils": ["libs/utils/src/index.ts"],
+      "AuthMiddleWare": ["libs/AuthMiddleware/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

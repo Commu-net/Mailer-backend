@@ -1,0 +1,23 @@
+{
+  "name": "AuthMiddleWare",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/AuthMiddleware/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/AuthMiddleware",
+        "main": "libs/AuthMiddleware/src/index.ts",
+        "tsConfig": "libs/AuthMiddleware/tsconfig.lib.json",
+        "assets": ["libs/AuthMiddleware/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  },
+  "tags": []
+}

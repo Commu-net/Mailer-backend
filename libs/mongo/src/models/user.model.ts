@@ -57,7 +57,7 @@ const emailModel = new mongoose.Schema({
         unique : true
     }
 })
-interface userI{
+interface userI extends mongoose.Document {
     _id :ObjectId, 
     name: string;
     email: string;
@@ -67,7 +67,8 @@ interface userI{
     googleId?: string;
     acessToken? : string
     rToken? : string,
-    id?:string
+    id?:string,
+    emailSelected? : string[]
 }
 
 interface emailI{

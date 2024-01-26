@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import {User , userInterface } from "@auth/mongo";
 import { google } from "googleapis";
@@ -6,12 +7,15 @@ import formidable from 'formidable';
 import { readFileSync, unlink, writeFile } from "fs";
 import { Buffer } from "buffer";
 import { promisify } from "util";
+import { ApiResponse, Apperror } from "@auth/utils";
+import session from "express-session";
 
-interface AuthorizedRequest extends Request{
-    user? : any
-}
-
-export async function sendMail(req: AuthorizedRequest, res: Response, next: NextFunction) {
+interface RequestWithSession extends Request {
+    user: any;
+    // logout(arg0: (err: Error) => void): unknown;
+    session: session.Session & Partial<session.SessionData> & { user?: any };
+  }
+export async function sendMail(req: RequestWithSession, res: Response) {
     try {
         // Temporarily checking sending mail
         const user: userInterface | null = await User.findOne({ "email": "chahatsagar2003@gmail.com" });
@@ -56,9 +60,9 @@ export async function sendMail(req: AuthorizedRequest, res: Response, next: Next
 const writeFileAsync = promisify(writeFile);
 const unlinkAsync = promisify(unlink);
 
-var tempDirectory = process.env.TEMP_FILE || "./apps/mail-services/src/temp";
+let  tempDirectory = process.env.TEMP_FILE || "./apps/mail-services/src/temp";
 
-export async function sendMass(req: AuthorizedRequest, res: Response, next: NextFunction) {
+export async function sendMass(req: RequestWithSession, res: Response, next: NextFunction)  {
     const form: any = formidable({
         minFileSize: 1,
         maxFiles: 5,
@@ -157,3 +161,40 @@ async function sendOneMail(mail : string , senderMail : string ,fileNames : stri
         console.log(error);
     }
 }
+
+export const getAllEmail = async ( req : RequestWithSession , res : Response , next : NextFunction)  =>{
+    console.log (req);
+    console.log(req.session) ;
+
+    try {
+        const email = "chahatsagar2003@gmail.com"
+        const user  : userInterface= await User.findOne({ email});
+        console.log(user);  
+         return res.status(200).json({
+            success : true, 
+            emails :user.emailSelected
+        });
+        
+
+    } catch (error) {
+        
+        return next(new Apperror(error.message , 400))
+
+    }
+}
+
+export const addEmail  = async( req :Request,  res : Response, next  :NextFunction) => {
+    try {
+        // const email = req.params.email;
+        const email = "Jhatu@gmail.com";
+        const userEmail  ="chahatsagar2003@gmail.com"
+        const user  :userInterface= await User.findOne({ email : userEmail}); 
+        user.emailSelected.push(email);
+        await user.save();  
+        return new ApiResponse(res , 200 , "Email added successfully" , user); 
+
+    } catch (error) {
+        return next(new Apperror(error.message , 400))
+    }
+}
+

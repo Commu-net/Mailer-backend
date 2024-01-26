@@ -19,25 +19,17 @@ import {Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oauth
 connectToDb();
 
 
+dotenv.config({
+  path: "../.env",
+});
+
 const app: Express = express();
 
 app.use(express.json());
 app.use(morgan("dev"));
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET as string,
-    resave: true,
-    saveUninitialized: true,
-  })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-// app.use(cors())
-app.use("/api/v1/user", userRoutes);
 
-dotenv.config({
-  path: "../.env",
-});
+// app.use(cors())
+app.use("/", userRoutes);
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID as string,
