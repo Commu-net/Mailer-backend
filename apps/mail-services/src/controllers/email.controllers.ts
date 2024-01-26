@@ -197,4 +197,18 @@ export const addEmail  = async( req :Request,  res : Response, next  :NextFuncti
         return next(new Apperror(error.message , 400))
     }
 }
+export const removeEmail =async ( req :Request , res:Response , next :NextFunction ) => {
+    try {
+        const userEmail = "chahatsagar2003@gmail.com" ;
+        const email = "Jhatu@gmail.com";
+        const user :userInterface = await User.findOne({ email : userEmail});
+        user.emailSelected = user.emailSelected.filter((item) => item !== email);   
+
+        await user.save();
+        return new ApiResponse(res , 200 , "Email removed successfully" , user);
+        
+    } catch (error) {
+        return next (new Apperror(error.message , 400)  )
+    }
+}
 
