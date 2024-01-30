@@ -186,12 +186,16 @@ export const getAllEmail = async ( req : RequestWithSession , res : Response , n
 export const addEmail  = async( req :Request,  res : Response, next  :NextFunction) => {
     try {
         // const email = req.params.email;
-        const email = "Jhatu@gmail.com";
-        const userEmail  ="chahatsagar2003@gmail.com"
+        const email = req.body.email;
+        const userEmail  = req.body.userEmail;
         const user  :userInterface= await User.findOne({ email : userEmail}); 
+        if(!user){
+            return next(new Apperror("User not found", 404));
+        }
+
         user.emailSelected.push(email);
         await user.save();  
-        return new ApiResponse(res , 200 , "Email added successfully" , user); 
+        return new ApiResponse(res , 200 , "Email added successfully"); 
 
     } catch (error) {
         return next(new Apperror(error.message , 400))

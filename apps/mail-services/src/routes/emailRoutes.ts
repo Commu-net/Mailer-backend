@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { Request, Response } from "express";
 
-import { getAllEmail, sendMail , sendMass} from "../controllers/email.controllers";
+import { getAllEmail, sendMail , sendMass , addEmail} from "../controllers/email.controllers";
 
 import { authMiddleWare } from "@auth/ErrorMiddleware";
 const router: Router = Router();
@@ -13,11 +13,11 @@ const router: Router = Router();
 //     return res.status(200).json("post on this route");
 // });
 
-// router.post("/mail", sendMass );  //send mails with attachments 
+router.route("/send").get(sendMass);  //send mails with attachments 
 
-// router.post("/send",sendMail); //send mail without attachments
 
-router.route("/mail" ).get(  getAllEmail )
+router.route("/mail").get(getAllEmail).post(addEmail);
+
 
 export default router;
 
