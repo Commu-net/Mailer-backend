@@ -69,7 +69,7 @@ const userModel = new import_mongoose.default.Schema({
     type: String
   },
   emailSelected: {
-    type: [import_mongoose.default.Schema.Types.ObjectId],
+    type: [String],
     ref: "Emails"
   }
 });

@@ -22,7 +22,7 @@ __export(utils_exports, {
 });
 module.exports = __toCommonJS(utils_exports);
 class ApiResponse {
-  constructor(res, statusCode, message, data) {
+  constructor(res, statusCode, message, data = null) {
     res.status(statusCode).json({
       statusCode,
       message,

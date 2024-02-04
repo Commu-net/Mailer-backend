@@ -100,7 +100,13 @@ const getUserData = (req, res, next) => {
   try {
     if (req.user) {
       console.log(req.user);
-      return new import_utils.ApiResponse(res, 200, "Success", req.user);
+      const user = req.user;
+      const data = {
+        name: user.name,
+        email: user.email,
+        googleId: user.googleId
+      };
+      return new import_utils.ApiResponse(res, 200, "Success", data);
     } else {
       return new import_utils.ApiResponse(res, 400, "failure", { message: "No user data" });
     }

@@ -47,9 +47,6 @@ app.use(
 app.use(import_passport.default.initialize());
 app.use(import_passport.default.session());
 app.use("/api/v1/user", import_userRoutes.default);
-import_dotenv.default.config({
-  path: "../.env"
-});
 import_passport.default.use(new import_passport_google_oauth2.Strategy(
   {
     clientID: process.env.GOOGLE_CLIENT_ID,
