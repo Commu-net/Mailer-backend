@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: "./apps/nginx-reverse-proxy/Dockerfile"
     ports:
-      - "8080:80"
+      - "80:80"
     networks:
       - backend
 

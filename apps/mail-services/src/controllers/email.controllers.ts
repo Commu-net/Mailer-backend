@@ -163,18 +163,11 @@ async function sendOneMail(mail : string , senderMail : string ,fileNames : stri
 }
 
 export const getAllEmail = async ( req : RequestWithSession , res : Response , next : NextFunction)  =>{
-    console.log (req);
-    console.log(req.session) ;
-
     try {
-        const email = "chahatsagar2003@gmail.com"
+        const email = req.body.userEmail;
         const user  : userInterface= await User.findOne({ email});
-        console.log(user);  
-         return res.status(200).json({
-            success : true, 
-            emails :user.emailSelected
-        });
-        
+
+        return new ApiResponse(res,200,"success",user.emailSelected);
 
     } catch (error) {
         
@@ -188,13 +181,15 @@ export const addEmail  = async( req :Request,  res : Response, next  :NextFuncti
         // const email = req.params.email;
         const email = req.body.email;
         const userEmail  = req.body.userEmail;
-        const user  :userInterface= await User.findOne({ email : userEmail}); 
+        const user  : userInterface= await User.findOne({ email : userEmail}); 
         if(!user){
             return next(new Apperror("User not found", 404));
         }
 
         user.emailSelected.push(email);
         await user.save();  
+
+        
         return new ApiResponse(res , 200 , "Email added successfully"); 
 
     } catch (error) {
@@ -203,16 +198,47 @@ export const addEmail  = async( req :Request,  res : Response, next  :NextFuncti
 }
 export const removeEmail =async ( req :Request , res:Response , next :NextFunction ) => {
     try {
-        const userEmail = "chahatsagar2003@gmail.com" ;
-        const email = "Jhatu@gmail.com";
-        const user :userInterface = await User.findOne({ email : userEmail});
+        const userEmail : string = req.body.userEmail;
+        const email : string = req.body.email;
+        const user : userInterface = await User.findOne({ email : userEmail});
+        if(!user) return new Apperror("user not found",404);
+
         user.emailSelected = user.emailSelected.filter((item) => item !== email);   
 
         await user.save();
-        return new ApiResponse(res , 200 , "Email removed successfully" , user);
+
+        const data = {
+            name : user.name,
+            email : user.email,
+            googleId : user.googleId
+        }
+        return new ApiResponse(res , 200 , "Email removed successfully" , data);
         
     } catch (error) {
         return next (new Apperror(error.message , 400)  )
     }
 }
 
+export const updateEmail = async (req : Request ,res : Response , next : NextFunction) => {
+    try{
+        const userEmail : string = req.body.userEmail;
+        const email : string = req.body.email;
+        const newEmail : string = req.body.newEmail;
+
+        const user : userInterface | null = await User.findOne({email : userEmail});
+        if(!user) return next(new Apperror("User not found",404));
+
+        user.emailSelected.forEach((value , index) => {
+            if(value === email){
+                user.emailSelected[index] = newEmail;
+            }
+        });
+
+        await user.save();
+
+        return new ApiResponse(res,200,"Email updated",user.emailSelected);
+    }   
+    catch(error : any){
+        return next(new Apperror(error.message,500));
+    }
+};

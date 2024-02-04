@@ -95,8 +95,13 @@ const getUserData = (req : RequestWithSession , res : Response, next : NextFunct
     try {
         if(req.user) {
             console.log(req.user) ;
-            
-            return new ApiResponse(res , 200 , "Success" , req.user);
+            const user = req.user;
+            const data = {
+                name : user.name,
+                email : user.email,
+                googleId : user.googleId
+            }
+            return new ApiResponse(res , 200 , "Success" , data);
         }else{
             return new ApiResponse(res , 400 , "failure" , {message : "No user data"});
         }
