@@ -43,10 +43,10 @@ const userModel = new  mongoose.Schema({
         type : String
     },
 
-    emailSelected : {
-        type : [String],
-        ref : 'Emails'
-    }
+    emailSelected: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Email'
+    }]
     
 });
 
@@ -54,7 +54,22 @@ const emailModel = new mongoose.Schema({
     email : {
         type : String,
         maxlength : 50,
-        unique : true
+        required : true,
+        trim : true
+    },
+    name : {
+        type : String,
+        maxlength : 50,
+        trim : true
+    },
+    currentDesignation : {
+        type : String,
+        maxlength : 50,
+        trim : true
+    },
+    addedOn :{
+        type : Date,
+        default : Date.now()
     }
 })
 interface userI extends mongoose.Document {
@@ -68,11 +83,14 @@ interface userI extends mongoose.Document {
     acessToken? : string
     rToken? : string,
     id?:string,
-    emailSelected? : string[]
+    emailSelected? : mongoose.Schema.Types.ObjectId[]
 }
 
-interface emailI{
-    email? : string
+interface emailI extends mongoose.Document {
+    email: string;
+    name?: string;
+    currentDesignation?: string;
+    addedOn?: Date;
 }
 
 
@@ -80,5 +98,5 @@ type userInterface = userI;
 type emailInterface = emailI;
 
 const User  =  mongoose.model("User" , userModel) ;
-const Emails = mongoose.model("Emails" , emailModel);
-export { User , userInterface , emailInterface} ;   
+const Email = mongoose.model("Email" , emailModel);
+export { User , Email ,userInterface , emailInterface} ;   

@@ -40,7 +40,7 @@ const googleCallback  =  (req : Request ,res : Response , next : NextFunction ) 
     }
 }
 
-const googleSuccess = (req : RequestWithSession , res : Response , next : NextFunction ) => {
+const googleSuccess = (req : any , res : Response , next : NextFunction ) => {
     try {
         console.log(req.user)   
         res.redirect(`${process.env.CLIENT_URL}`)
@@ -56,12 +56,12 @@ const googleFailure = (  req : Request, res : Response , next : NextFunction ) =
 }
 
 
-interface RequestWithSession extends Request {
-    logout(arg0: (err: Error) => void): unknown;
-    user: any;
-    session: session.Session & Partial<session.SessionData> & { user?: any };
-  }
-const logout = (req: RequestWithSession, res: Response, next: NextFunction) => {
+// interface RequestWithSession extends Request {
+//     logout(arg0: (err: Error) => void): unknown;
+//     user: any;
+//     session: session.Session & Partial<session.SessionData> & { user?: any };
+//   }
+const logout = (req: any, res: Response, next: NextFunction) => {
     try {
         if (req.session) {
             req.session.destroy((err: Error) => {
@@ -91,7 +91,7 @@ const logout = (req: RequestWithSession, res: Response, next: NextFunction) => {
 
 
 
-const getUserData = (req : RequestWithSession , res : Response, next : NextFunction ) => { 
+const getUserData = (req : any , res : Response, next : NextFunction ) => { 
     try {
         if(req.user) {
             console.log(req.user) ;

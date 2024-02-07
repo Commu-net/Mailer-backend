@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiResponse = exports.Apperror = void 0;
 class ApiResponse {
-    constructor(res, statusCode, message, data) {
+    constructor(res, statusCode, message, data = null) {
         res.status(statusCode).json({
             statusCode,
             message,

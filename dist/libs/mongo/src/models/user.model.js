@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Email = exports.User = void 0;
 const mongoose_1 = require("mongoose");
 const userModel = new mongoose_1.default.Schema({
     name: {
@@ -39,19 +39,35 @@ const userModel = new mongoose_1.default.Schema({
     rToken: {
         type: String
     },
-    emailSelected: {
-        type: [mongoose_1.default.Schema.Types.ObjectId],
-        ref: 'Emails'
-    }
+    emailSelected: [{
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'Email'
+        }]
 });
 const emailModel = new mongoose_1.default.Schema({
     email: {
         type: String,
         maxlength: 50,
-        unique: true
+        required: true,
+        trim: true
+    },
+    name: {
+        type: String,
+        maxlength: 50,
+        trim: true
+    },
+    currentDesignation: {
+        type: String,
+        maxlength: 50,
+        trim: true
+    },
+    addedOn: {
+        type: Date,
+        default: Date.now()
     }
 });
 const User = mongoose_1.default.model("User", userModel);
 exports.User = User;
-const Emails = mongoose_1.default.model("Emails", emailModel);
+const Email = mongoose_1.default.model("Email", emailModel);
+exports.Email = Email;
 //# sourceMappingURL=user.model.js.map

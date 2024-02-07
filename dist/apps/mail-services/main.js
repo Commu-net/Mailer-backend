@@ -172,34 +172,44 @@ function sendOneMail(mail, senderMail, fileNames, subject, text, user) {
         }
         catch (error) {
             console.log(error);
+            return error;
         }
     });
 }
 const getAllEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
-        const email = req.body.userEmail;
-        const user = yield mongo_1.User.findOne({ email });
+        const userEmail = req.body.userEmail;
+        const user = yield mongo_1.User.findOne({ email: userEmail }).populate('emailSelected');
         return new utils_1.ApiResponse(res, 200, "success", user.emailSelected);
     }
     catch (error) {
+        console.log(error);
         return next(new utils_1.Apperror(error.message, 400));
     }
 });
 exports.getAllEmail = getAllEmail;
 const addEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const email = req.params.email;
-        const email = req.body.email;
         const userEmail = req.body.userEmail;
+        const data = {
+            email: req.body.email,
+            currentDesignation: req.body.currentDesignation,
+            name: req.body.name
+        };
         const user = yield mongo_1.User.findOne({ email: userEmail });
         if (!user) {
             return next(new utils_1.Apperror("User not found", 404));
         }
-        user.emailSelected.push(email);
+        let emailFound = yield mongo_1.Email.findOne({ email: data.email });
+        if (!emailFound)
+            emailFound = yield mongo_1.Email.create(data);
+        user.emailSelected.push(emailFound._id);
         yield user.save();
+        yield emailFound.save();
         return new utils_1.ApiResponse(res, 200, "Email added successfully");
     }
     catch (error) {
+        console.log(error);
         return next(new utils_1.Apperror(error.message, 400));
     }
 });
@@ -207,18 +217,19 @@ exports.addEmail = addEmail;
 const removeEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
         const userEmail = req.body.userEmail;
-        const email = req.body.email;
+        const deleteEmail = req.body.email;
+        const email = yield mongo_1.Email.findOne({ email: deleteEmail });
+        if (!email) {
+            return new utils_1.ApiResponse(res, 200, "Email not found");
+        }
         const user = yield mongo_1.User.findOne({ email: userEmail });
-        if (!user)
-            return new utils_1.Apperror("user not found", 404);
-        user.emailSelected = user.emailSelected.filter((item) => item !== email);
+        if (!user) {
+            return next(new utils_1.Apperror("User not found", 404));
+        }
+        user.emailSelected = user.emailSelected.filter((item) => item.toString() !== email._id.toString());
+        yield email.deleteOne({ email: deleteEmail });
         yield user.save();
-        const data = {
-            name: user.name,
-            email: user.email,
-            googleId: user.googleId
-        };
-        return new utils_1.ApiResponse(res, 200, "Email removed successfully", data);
+        return new utils_1.ApiResponse(res, 200, "Email removed successfully");
     }
     catch (error) {
         return next(new utils_1.Apperror(error.message, 400));
@@ -228,20 +239,34 @@ exports.removeEmail = removeEmail;
 const updateEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
         const userEmail = req.body.userEmail;
-        const email = req.body.email;
-        const newEmail = req.body.newEmail;
+        const data = {
+            email: req.body.email,
+            currentDesignation: req.body.currentDesignation,
+            name: req.body.name
+        };
         const user = yield mongo_1.User.findOne({ email: userEmail });
-        if (!user)
+        const email = yield mongo_1.Email.findOne({ email: data.email });
+        if (!user) {
             return next(new utils_1.Apperror("User not found", 404));
+        }
+        if (!email) {
+            const newEmail = yield mongo_1.Email.create(data);
+            user.emailSelected.push(newEmail._id);
+            yield email.save();
+            yield user.save();
+            return new utils_1.ApiResponse(res, 200, "Email added", null);
+        }
+        const updatedEmail = yield mongo_1.Email.findOneAndUpdate({ email: data.email }, data, { new: true });
         user.emailSelected.forEach((value, index) => {
-            if (value === email) {
-                user.emailSelected[index] = newEmail;
+            if (value === (updatedEmail === null || updatedEmail === void 0 ? void 0 : updatedEmail._id)) {
+                user.emailSelected[index] = updatedEmail === null || updatedEmail === void 0 ? void 0 : updatedEmail._id;
             }
         });
         yield user.save();
-        return new utils_1.ApiResponse(res, 200, "Email updated", user.emailSelected);
+        return new utils_1.ApiResponse(res, 200, "Email updated");
     }
     catch (error) {
+        console.log(error);
         return next(new utils_1.Apperror(error.message, 500));
     }
 });
@@ -294,7 +319,7 @@ module.exports = require("mongoose");
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.User = void 0;
+exports.Email = exports.User = void 0;
 const tslib_1 = __webpack_require__(1);
 const mongoose_1 = tslib_1.__importDefault(__webpack_require__(8));
 const userModel = new mongoose_1.default.Schema({
@@ -334,21 +359,37 @@ const userModel = new mongoose_1.default.Schema({
     rToken: {
         type: String
     },
-    emailSelected: {
-        type: [String],
-        ref: 'Emails'
-    }
+    emailSelected: [{
+            type: mongoose_1.default.Schema.Types.ObjectId,
+            ref: 'Email'
+        }]
 });
 const emailModel = new mongoose_1.default.Schema({
     email: {
         type: String,
         maxlength: 50,
-        unique: true
+        required: true,
+        trim: true
+    },
+    name: {
+        type: String,
+        maxlength: 50,
+        trim: true
+    },
+    currentDesignation: {
+        type: String,
+        maxlength: 50,
+        trim: true
+    },
+    addedOn: {
+        type: Date,
+        default: Date.now()
     }
 });
 const User = mongoose_1.default.model("User", userModel);
 exports.User = User;
-const Emails = mongoose_1.default.model("Emails", emailModel);
+const Email = mongoose_1.default.model("Email", emailModel);
+exports.Email = Email;
 
 
 /***/ }),

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../../../libs/mongo/src/index.ts"],
-  "sourcesContent": ["export {connectToDb}  from './lib/mongo';\nexport * from \"./models/user.model\""],
-  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,mBAA2B;AAC3B,wBAAc,gCADd;",
-  "names": []
-}

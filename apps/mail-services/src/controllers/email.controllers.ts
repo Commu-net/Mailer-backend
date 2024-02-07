@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
-import {User , userInterface } from "@auth/mongo";
+import { User, Email, userInterface, emailInterface } from "@auth/mongo";
 import { google } from "googleapis";
 import MailComposer from "nodemailer/lib/mail-composer";
 import formidable from 'formidable';
-import { readFileSync, unlink, writeFile } from "fs";
+import { readFileSync, stat, unlink, writeFile } from "fs";
 import { Buffer } from "buffer";
 import { promisify } from "util";
 import { ApiResponse, Apperror } from "@auth/utils";
@@ -14,7 +14,7 @@ interface RequestWithSession extends Request {
     user: any;
     // logout(arg0: (err: Error) => void): unknown;
     session: session.Session & Partial<session.SessionData> & { user?: any };
-  }
+}
 export async function sendMail(req: RequestWithSession, res: Response) {
     try {
         // Temporarily checking sending mail
@@ -26,12 +26,12 @@ export async function sendMail(req: RequestWithSession, res: Response) {
             process.env.GOOGLE_CLIENT_SECRET,
             // process.env.CLIENT_URL
         );
-        
+
         oauth2Client.setCredentials({
             access_token: user.acessToken,
             refresh_token: user.rToken,
         });
-        
+
         const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
         const mailOptions = {
@@ -60,9 +60,9 @@ export async function sendMail(req: RequestWithSession, res: Response) {
 const writeFileAsync = promisify(writeFile);
 const unlinkAsync = promisify(unlink);
 
-let  tempDirectory = process.env.TEMP_FILE || "./apps/mail-services/src/temp";
+let tempDirectory = process.env.TEMP_FILE || "./apps/mail-services/src/temp";
 
-export async function sendMass(req: RequestWithSession, res: Response, next: NextFunction)  {
+export async function sendMass(req: RequestWithSession, res: Response, next: NextFunction) {
     const form: any = formidable({
         minFileSize: 1,
         maxFiles: 5,
@@ -81,7 +81,7 @@ export async function sendMass(req: RequestWithSession, res: Response, next: Nex
 
         try {
 
-            await Promise.all(Object.keys(files).map(async (key : any) => {
+            await Promise.all(Object.keys(files).map(async (key: any) => {
                 const filename: string = files[key][0].originalFilename;
                 const rawFile: Buffer = readFileSync(files[key][0].filepath);
 
@@ -93,13 +93,13 @@ export async function sendMass(req: RequestWithSession, res: Response, next: Nex
             const sender: string = fields.sender[0];
             const subject: string = fields.subject[0];
             const text: string = fields.text[0];
-            
+
             const user: userInterface | null = await User.findOne({ "email": sender });
 
-            if(!user) return res.status(404).json({"message" : "User not found"});
+            if (!user) return res.status(404).json({ "message": "User not found" });
 
             await Promise.all(emails.map(async (email: string) => {
-                await sendOneMail(email, sender, fileNames, subject, text , user);
+                await sendOneMail(email, sender, fileNames, subject, text, user);
             }));
 
             await Promise.all(fileNames.map(async (element: string) => {
@@ -114,10 +114,10 @@ export async function sendMass(req: RequestWithSession, res: Response, next: Nex
     });
 }
 
-async function sendOneMail(mail : string , senderMail : string ,fileNames : string[] , subject : string , text : string , user : userInterface){
+async function sendOneMail(mail: string, senderMail: string, fileNames: string[], subject: string, text: string, user: userInterface) {
     try {
         // Temporarily checking sending mail
-        
+
         if (!user) return new Error("User not found");
 
         const oauth2Client = new google.auth.OAuth2(
@@ -125,13 +125,13 @@ async function sendOneMail(mail : string , senderMail : string ,fileNames : stri
             process.env.GOOGLE_CLIENT_SECRET,
             // process.env.CLIENT_URL
         );
-        
+
 
         oauth2Client.setCredentials({
             access_token: user.acessToken,
             refresh_token: user.rToken,
         });
-        
+
         const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
 
         const mailOptions = {
@@ -158,87 +158,117 @@ async function sendOneMail(mail : string , senderMail : string ,fileNames : stri
         console.log(`email send by ${senderMail}`);
 
     } catch (error: any) {
-        console.log(error);
+        console.log(error)
+        return error;
     }
 }
 
-export const getAllEmail = async ( req : RequestWithSession , res : Response , next : NextFunction)  =>{
+export const getAllEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const email = req.body.userEmail;
-        const user  : userInterface= await User.findOne({ email});
+        const userEmail = req.body.userEmail;
+        const user: userInterface = await User.findOne({ email: userEmail }).populate('emailSelected');
 
-        return new ApiResponse(res,200,"success",user.emailSelected);
+        return new ApiResponse(res, 200, "success", user.emailSelected);
 
     } catch (error) {
-        
-        return next(new Apperror(error.message , 400))
-
+        console.log(error);
+        return next(new Apperror(error.message, 400));
     }
 }
 
-export const addEmail  = async( req :Request,  res : Response, next  :NextFunction) => {
+export const addEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // const email = req.params.email;
-        const email = req.body.email;
-        const userEmail  = req.body.userEmail;
-        const user  : userInterface= await User.findOne({ email : userEmail}); 
-        if(!user){
+        const userEmail: string = req.body.userEmail;
+        const data = {
+            email: req.body.email as string,
+            currentDesignation: req.body.currentDesignation as string,
+            name: req.body.name as string
+        }
+        const user: userInterface = await User.findOne({ email: userEmail });
+
+        if (!user) {
+            return next(new Apperror("User not found", 404));
+        }
+        let emailFound: emailInterface = await Email.findOne({ email: data.email });
+        if (!emailFound)
+            emailFound = await Email.create(data);
+
+        user.emailSelected.push(emailFound._id);
+        await user.save();
+        await emailFound.save();
+
+        return new ApiResponse(res, 200, "Email added successfully");
+
+    } catch (error) {
+        console.log(error);
+        return next(new Apperror(error.message, 400));
+    }
+}
+
+export const removeEmail = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userEmail: string = req.body.userEmail;
+        const deleteEmail: string = req.body.email;
+
+        const email: emailInterface = await Email.findOne({ email: deleteEmail });
+
+        if (!email) {
+            return new ApiResponse(res, 200, "Email not found");
+        }
+        const user: userInterface = await User.findOne({ email: userEmail });
+
+        if (!user) {
             return next(new Apperror("User not found", 404));
         }
 
-        user.emailSelected.push(email);
-        await user.save();  
-
+        user.emailSelected = user.emailSelected.filter((item) => item.toString() !== email._id.toString());
+        await email.deleteOne({ email: deleteEmail });
         
-        return new ApiResponse(res , 200 , "Email added successfully"); 
-
-    } catch (error) {
-        return next(new Apperror(error.message , 400))
-    }
-}
-export const removeEmail =async ( req :Request , res:Response , next :NextFunction ) => {
-    try {
-        const userEmail : string = req.body.userEmail;
-        const email : string = req.body.email;
-        const user : userInterface = await User.findOne({ email : userEmail});
-        if(!user) return new Apperror("user not found",404);
-
-        user.emailSelected = user.emailSelected.filter((item) => item !== email);   
-
         await user.save();
 
-        const data = {
-            name : user.name,
-            email : user.email,
-            googleId : user.googleId
-        }
-        return new ApiResponse(res , 200 , "Email removed successfully" , data);
-        
+        return new ApiResponse(res, 200, "Email removed successfully");
+
     } catch (error) {
-        return next (new Apperror(error.message , 400)  )
+        return next(new Apperror(error.message, 400));
     }
 }
 
-export const updateEmail = async (req : Request ,res : Response , next : NextFunction) => {
-    try{
-        const userEmail : string = req.body.userEmail;
-        const email : string = req.body.email;
-        const newEmail : string = req.body.newEmail;
+export const updateEmail = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userEmail: string = req.body.userEmail;
+        const data = {
+            email: req.body.email as string,
+            currentDesignation: req.body.currentDesignation as string,
+            name: req.body.name as string
+        }
 
-        const user : userInterface | null = await User.findOne({email : userEmail});
-        if(!user) return next(new Apperror("User not found",404));
+        const user: userInterface | null = await User.findOne({ email: userEmail });
+        const email: emailInterface | null = await Email.findOne({ email: data.email });
 
-        user.emailSelected.forEach((value , index) => {
-            if(value === email){
-                user.emailSelected[index] = newEmail;
+        if (!user) {
+            return next(new Apperror("User not found", 404));
+        }
+
+        if (!email) {
+            const newEmail: emailInterface | null = await Email.create(data);
+            user.emailSelected.push(newEmail._id);
+            await email.save();
+            await user.save();
+            return new ApiResponse(res, 200, "Email added", null);
+        }
+
+        const updatedEmail: emailInterface | null = await Email.findOneAndUpdate({ email: data.email }, data, { new: true });
+        user.emailSelected.forEach((value, index) => {
+            if (value === updatedEmail?._id) {
+                user.emailSelected[index] = updatedEmail?._id;
             }
         });
-
         await user.save();
 
-        return new ApiResponse(res,200,"Email updated",user.emailSelected);
-    }   
-    catch(error : any){
-        return next(new Apperror(error.message,500));
+        return new ApiResponse(res, 200, "Email updated");
+
+    } catch (error) {
+        console.log(error);
+        return next(new Apperror(error.message, 500));
     }
 };

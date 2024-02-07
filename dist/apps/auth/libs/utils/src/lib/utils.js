@@ -42,4 +42,3 @@ class Apperror extends Error {
   ApiResponse,
   Apperror
 });
-//# sourceMappingURL=utils.js.map

@@ -61,7 +61,8 @@ passport.use(new GoogleStrategy({
           domain: profile.domain,
           googleId: profile.id,
           acessToken : accessToken,
-          rToken : refreshToken
+          rToken : refreshToken,
+          emailSelected : []
         });
         await user.save();
         done(null, user);

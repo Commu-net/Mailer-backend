@@ -27,6 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var user_model_exports = {};
 __export(user_model_exports, {
+  Email: () => Email,
   User: () => User
 });
 module.exports = __toCommonJS(user_model_exports);
@@ -68,22 +69,37 @@ const userModel = new import_mongoose.default.Schema({
   rToken: {
     type: String
   },
-  emailSelected: {
-    type: [String],
-    ref: "Emails"
-  }
+  emailSelected: [{
+    type: import_mongoose.default.Schema.Types.ObjectId,
+    ref: "Email"
+  }]
 });
 const emailModel = new import_mongoose.default.Schema({
   email: {
     type: String,
     maxlength: 50,
-    unique: true
+    required: true,
+    trim: true
+  },
+  name: {
+    type: String,
+    maxlength: 50,
+    trim: true
+  },
+  currentDesignation: {
+    type: String,
+    maxlength: 50,
+    trim: true
+  },
+  addedOn: {
+    type: Date,
+    default: Date.now()
   }
 });
 const User = import_mongoose.default.model("User", userModel);
-const Emails = import_mongoose.default.model("Emails", emailModel);
+const Email = import_mongoose.default.model("Email", emailModel);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  Email,
   User
 });
-//# sourceMappingURL=user.model.js.map

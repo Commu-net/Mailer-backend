@@ -23,7 +23,7 @@
 /// <reference types="mongoose/types/virtuals" />
 /// <reference types="mongoose/types/inferschematype" />
 import mongoose, { ObjectId } from "mongoose";
-interface userI {
+interface userI extends mongoose.Document {
     _id: ObjectId;
     name: string;
     email: string;
@@ -34,9 +34,13 @@ interface userI {
     acessToken?: string;
     rToken?: string;
     id?: string;
+    emailSelected?: mongoose.Schema.Types.ObjectId[];
 }
-interface emailI {
-    email?: string;
+interface emailI extends mongoose.Document {
+    email: string;
+    name?: string;
+    currentDesignation?: string;
+    addedOn?: Date;
 }
 type userInterface = userI;
 type emailInterface = emailI;
@@ -105,4 +109,39 @@ declare const User: mongoose.Model<{
 }> & {
     _id: mongoose.Types.ObjectId;
 }>>;
-export { User, userInterface, emailInterface };
+declare const Email: mongoose.Model<{
+    email: string;
+    addedOn: Date;
+    name?: string | null | undefined;
+    currentDesignation?: string | null | undefined;
+}, {}, {}, {}, mongoose.Document<unknown, {}, {
+    email: string;
+    addedOn: Date;
+    name?: string | null | undefined;
+    currentDesignation?: string | null | undefined;
+}> & {
+    email: string;
+    addedOn: Date;
+    name?: string | null | undefined;
+    currentDesignation?: string | null | undefined;
+} & {
+    _id: mongoose.Types.ObjectId;
+}, mongoose.Schema<any, mongoose.Model<any, any, any, any, any, any>, {}, {}, {}, {}, mongoose.DefaultSchemaOptions, {
+    email: string;
+    addedOn: Date;
+    name?: string | null | undefined;
+    currentDesignation?: string | null | undefined;
+}, mongoose.Document<unknown, {}, mongoose.FlatRecord<{
+    email: string;
+    addedOn: Date;
+    name?: string | null | undefined;
+    currentDesignation?: string | null | undefined;
+}>> & mongoose.FlatRecord<{
+    email: string;
+    addedOn: Date;
+    name?: string | null | undefined;
+    currentDesignation?: string | null | undefined;
+}> & {
+    _id: mongoose.Types.ObjectId;
+}>>;
+export { User, Email, userInterface, emailInterface };
