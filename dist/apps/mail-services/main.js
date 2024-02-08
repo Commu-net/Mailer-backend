@@ -122,7 +122,7 @@ function sendMass(req, res, next) {
                 if (!user)
                     return res.status(404).json({ "message": "User not found" });
                 yield Promise.all(emails.map((email) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                    yield sendOneMail(email, sender, fileNames, subject, text, user);
+                    yield sendOneMail(email, sender, fileNames, subject, text, user, next);
                 })));
                 yield Promise.all(fileNames.map((element) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                     yield unlinkAsync(tempDirectory + `${element}`);
@@ -130,14 +130,13 @@ function sendMass(req, res, next) {
                 return res.status(200).json({ "message": "Successful" });
             }
             catch (error) {
-                console.log(error);
-                next(error);
+                return next(new utils_1.Apperror("Token expired", 401));
             }
         }));
     });
 }
 exports.sendMass = sendMass;
-function sendOneMail(mail, senderMail, fileNames, subject, text, user) {
+function sendOneMail(mail, senderMail, fileNames, subject, text, user, next) {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         try {
             // Temporarily checking sending mail
@@ -171,8 +170,8 @@ function sendOneMail(mail, senderMail, fileNames, subject, text, user) {
             console.log(`email send by ${senderMail}`);
         }
         catch (error) {
-            console.log(error);
-            return error;
+            console.log(2);
+            return next(new utils_1.Apperror("Token expired", 401));
         }
     });
 }
@@ -183,30 +182,33 @@ const getAllEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0
         return new utils_1.ApiResponse(res, 200, "success", user.emailSelected);
     }
     catch (error) {
-        console.log(error);
-        return next(new utils_1.Apperror(error.message, 400));
+        return next(new utils_1.Apperror(error.message, 500));
     }
 });
 exports.getAllEmail = getAllEmail;
 const addEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
         const userEmail = req.body.userEmail;
-        const data = {
-            email: req.body.email,
-            currentDesignation: req.body.currentDesignation,
-            name: req.body.name
-        };
+        const emails = req.body.email.split(",").map((email) => email.trim());
         const user = yield mongo_1.User.findOne({ email: userEmail });
         if (!user) {
             return next(new utils_1.Apperror("User not found", 404));
         }
-        let emailFound = yield mongo_1.Email.findOne({ email: data.email });
-        if (!emailFound)
-            emailFound = yield mongo_1.Email.create(data);
-        user.emailSelected.push(emailFound._id);
-        yield user.save();
-        yield emailFound.save();
-        return new utils_1.ApiResponse(res, 200, "Email added successfully");
+        for (const email of emails) {
+            const data = {
+                email: email,
+                currentDesignation: req.body.currentDesignation,
+                name: req.body.name
+            };
+            let emailFound = yield mongo_1.Email.findOne({ email: email });
+            if (!emailFound) {
+                emailFound = yield mongo_1.Email.create(data);
+                yield emailFound.save();
+                user.emailSelected.push(emailFound._id);
+                yield user.save();
+            }
+        }
+        return new utils_1.ApiResponse(res, 200, "Emails added successfully");
     }
     catch (error) {
         console.log(error);

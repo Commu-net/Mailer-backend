@@ -9,6 +9,7 @@ import { Buffer } from "buffer";
 import { promisify } from "util";
 import { ApiResponse, Apperror } from "@auth/utils";
 import session from "express-session";
+import { appRootPath } from "nx/src/devkit-exports";
 
 interface RequestWithSession extends Request {
     user: any;
@@ -99,7 +100,7 @@ export async function sendMass(req: RequestWithSession, res: Response, next: Nex
             if (!user) return res.status(404).json({ "message": "User not found" });
 
             await Promise.all(emails.map(async (email: string) => {
-                await sendOneMail(email, sender, fileNames, subject, text, user);
+                await sendOneMail(email, sender, fileNames, subject, text, user, next);
             }));
 
             await Promise.all(fileNames.map(async (element: string) => {
@@ -107,14 +108,13 @@ export async function sendMass(req: RequestWithSession, res: Response, next: Nex
             }));
 
             return res.status(200).json({ "message": "Successful" });
-        } catch (error) {
-            console.log(error);
-            next(error);
+        } catch (error : any) {
+            return next(new Apperror("Token expired",401));
         }
     });
 }
 
-async function sendOneMail(mail: string, senderMail: string, fileNames: string[], subject: string, text: string, user: userInterface) {
+async function sendOneMail(mail: string, senderMail: string, fileNames: string[], subject: string, text: string, user: userInterface , next : NextFunction) {
     try {
         // Temporarily checking sending mail
 
@@ -158,8 +158,8 @@ async function sendOneMail(mail: string, senderMail: string, fileNames: string[]
         console.log(`email send by ${senderMail}`);
 
     } catch (error: any) {
-        console.log(error)
-        return error;
+        console.log(2)
+        return next(new Apperror("Token expired",401));
     }
 }
 
@@ -170,40 +170,48 @@ export const getAllEmail = async (req: Request, res: Response, next: NextFunctio
 
         return new ApiResponse(res, 200, "success", user.emailSelected);
 
-    } catch (error) {
-        console.log(error);
-        return next(new Apperror(error.message, 400));
+    } catch (error : any) {
+        return next(new Apperror(error.message, 500));
     }
 }
 
 export const addEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userEmail: string = req.body.userEmail;
-        const data = {
-            email: req.body.email as string,
-            currentDesignation: req.body.currentDesignation as string,
-            name: req.body.name as string
-        }
+        const emails: string[] = req.body.email.split(",").map((email: string) => email.trim()); 
+
         const user: userInterface = await User.findOne({ email: userEmail });
 
         if (!user) {
             return next(new Apperror("User not found", 404));
         }
-        let emailFound: emailInterface = await Email.findOne({ email: data.email });
-        if (!emailFound)
-            emailFound = await Email.create(data);
 
-        user.emailSelected.push(emailFound._id);
-        await user.save();
-        await emailFound.save();
+        for (const email of emails) {
+            const data = {
+                email: email,
+                currentDesignation: req.body.currentDesignation as string,
+                name: req.body.name as string
+            };
 
-        return new ApiResponse(res, 200, "Email added successfully");
+            let emailFound: emailInterface | null = await Email.findOne({ email: email });
+
+            if (!emailFound) {
+                emailFound = await Email.create(data);
+                await emailFound.save();
+                user.emailSelected.push(emailFound._id);
+                await user.save();
+            }
+
+        }
+
+        return new ApiResponse(res, 200, "Emails added successfully");
 
     } catch (error) {
         console.log(error);
         return next(new Apperror(error.message, 400));
     }
-}
+};
+
 
 export const removeEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -272,3 +280,4 @@ export const updateEmail = async (req: Request, res: Response, next: NextFunctio
         return next(new Apperror(error.message, 500));
     }
 };
+

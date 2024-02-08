@@ -2,7 +2,6 @@
 import passport, { AuthenticateOptions } from "passport"; 
 import {Request , Response , NextFunction} from "express"; 
 
-import session from 'express-session';
 import { ApiResponse, Apperror } from "@auth/utils";
 
 interface AuthOptions extends AuthenticateOptions{
