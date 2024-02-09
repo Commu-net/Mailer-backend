@@ -6,7 +6,7 @@
 
 import express from 'express';
 import * as path from 'path';
-import { Express , Request , Response} from "express";
+// import { Express , Request , Response} from "express";
 import * as dotenv from 'dotenv';
 import router from './routes/emailRoutes';
 import errorMiddleware from "./middlewares/errorMiddleware";
@@ -14,12 +14,22 @@ import {User, connectToDb} from "@auth/mongo";
 import morgan from 'morgan';
 import session from 'express-session';
 import passport from 'passport';
-import {Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oauth2"
-import { Apperror } from '@auth/utils';
+import cors from "cors";
+// import {Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oauth2"
+// import { Apperror } from '@auth/utils';
 
 const app = express();
 
 connectToDb();
+
+const corsOptions = {
+  origin: 'https://commu-net.vercel.app/',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 app.use(morgan("dev"));
 
@@ -36,13 +46,6 @@ app.use(passport.session());
 app.use("/api/v1/",router);
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
-
-
-
-
-
-
-
 
 
 app.get('/api', (req, res) => {

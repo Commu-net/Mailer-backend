@@ -22,6 +22,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var import_express = __toESM(require("express"));
 var import_dotenv = __toESM(require("dotenv"));
+var import_cors = __toESM(require("cors"));
 var import_mongo = require("@auth/mongo");
 var import_passport = __toESM(require("passport"));
 var import_userRoutes = __toESM(require("./routes/userRoutes"));
@@ -35,6 +36,12 @@ import_dotenv.default.config({
 });
 (0, import_mongo.connectToDb)();
 const app = (0, import_express.default)();
+const corsOptions = {
+  origin: "https://commu-net.vercel.app/",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  optionsSuccessStatus: 200
+};
+app.use((0, import_cors.default)(corsOptions));
 app.use(import_express.default.json());
 app.use((0, import_morgan.default)("dev"));
 app.use(
@@ -73,7 +80,8 @@ import_passport.default.use(new import_passport_google_oauth2.Strategy(
           domain: profile.domain,
           googleId: profile.id,
           acessToken: accessToken,
-          rToken: refreshToken
+          rToken: refreshToken,
+          emailSelected: []
         });
         await user.save();
         done(null, user);
@@ -106,3 +114,4 @@ const port = process.env.AUTH_PORT ? Number(process.env.AUTH_PORT) : 4e3;
 app.listen(port, host, () => {
   console.log(`[ ready ] http://${host}:${port}`);
 });
+//# sourceMappingURL=main.js.map

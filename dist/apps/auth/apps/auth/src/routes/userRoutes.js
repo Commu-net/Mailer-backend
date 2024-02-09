@@ -46,3 +46,4 @@ router.route("/auth/google/failure").get(import_user.googleFailure);
 router.route("/logout").get(import_user.logout);
 router.route("/getuser").get(import_user.getUserData);
 var userRoutes_default = router;
+//# sourceMappingURL=userRoutes.js.map

@@ -42,3 +42,4 @@ const connectToDb = async () => {
 0 && (module.exports = {
   connectToDb
 });
+//# sourceMappingURL=mongo.js.map

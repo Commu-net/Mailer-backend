@@ -1,5 +1,6 @@
 import express  , {Express , Request , Response  } from 'express';
 import dotenv from 'dotenv';
+import cors from "cors";
 
 dotenv.config({
   path: '../../../.env',
@@ -18,7 +19,16 @@ import {Strategy as GoogleStrategy, VerifyCallback } from "passport-google-oauth
 connectToDb();
 
 
+
 const app: Express = express();
+
+const corsOptions = {
+  origin: 'https://commu-net.vercel.app/',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  optionsSuccessStatus: 200
+}
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(morgan("dev"));
