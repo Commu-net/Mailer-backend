@@ -497,6 +497,12 @@ module.exports = require("express-session");
 
 module.exports = require("passport");
 
+/***/ }),
+/* 21 */
+/***/ ((module) => {
+
+module.exports = require("cors");
+
 /***/ })
 /******/ 	]);
 /************************************************************************/
@@ -545,14 +551,15 @@ const mongo_1 = __webpack_require__(6);
 const morgan_1 = tslib_1.__importDefault(__webpack_require__(18));
 const express_session_1 = tslib_1.__importDefault(__webpack_require__(19));
 const passport_1 = tslib_1.__importDefault(__webpack_require__(20));
+const cors_1 = tslib_1.__importDefault(__webpack_require__(21));
 const app = (0, express_1.default)();
 (0, mongo_1.connectToDb)();
-// const corsOptions = {
-//   origin: 'https://commu-net.vercel.app/',
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//   optionsSuccessStatus: 200
-// }
-// app.use(cors(corsOptions));
+const corsOptions = {
+    origin: 'https://commu-net.vercel.app/',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    optionsSuccessStatus: 200
+};
+app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use((0, morgan_1.default)("dev"));
 app.use((0, express_session_1.default)({
