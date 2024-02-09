@@ -23,7 +23,7 @@ connectToDb();
 const app: Express = express();
 
 const corsOptions = {
-  origin: 'https://commu-net.vercel.app/',
+  origin: 'https://commu-net.vercel.app',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   optionsSuccessStatus: 200
 }

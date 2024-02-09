@@ -555,7 +555,7 @@ const cors_1 = tslib_1.__importDefault(__webpack_require__(21));
 const app = (0, express_1.default)();
 (0, mongo_1.connectToDb)();
 const corsOptions = {
-    origin: 'https://commu-net.vercel.app/',
+    origin: 'https://commu-net.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     optionsSuccessStatus: 200
 };

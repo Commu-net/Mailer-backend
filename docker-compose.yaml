@@ -15,8 +15,7 @@ services:
     build:
       dockerfile: ./apps/auth/Dockerfile
       context: .
-    # ports:
-    #   - 4000:4000
+    
     environment:
       - CLIENT_URL=${CLIENT_URL}
       - MONGO_URL=${MONGO_URL}
@@ -34,8 +33,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/mail-services/Dockerfile
-    # ports:
-    #   - 3000:3000
+    
     environment:
       - CLIENT_URL=${CLIENT_URL}
       - MONGO_URL=${MONGO_URL}
