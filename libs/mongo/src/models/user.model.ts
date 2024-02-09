@@ -83,7 +83,7 @@ interface userI extends mongoose.Document {
     acessToken? : string
     rToken? : string,
     id?:string,
-    emailSelected? : mongoose.Schema.Types.ObjectId[]
+    emailSelected? : mongoose.Schema.Types.ObjectId[] | null
 }
 
 interface emailI extends mongoose.Document {
