@@ -114,4 +114,3 @@ const port = process.env.AUTH_PORT ? Number(process.env.AUTH_PORT) : 4e3;
 app.listen(port, host, () => {
   console.log(`[ ready ] http://${host}:${port}`);
 });
-//# sourceMappingURL=main.js.map

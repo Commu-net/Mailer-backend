@@ -28,4 +28,3 @@ __reExport(src_exports, require("./models/user.model"), module.exports);
   connectToDb,
   ...require("./models/user.model")
 });
-//# sourceMappingURL=index.js.map

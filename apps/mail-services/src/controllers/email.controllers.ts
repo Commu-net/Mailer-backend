@@ -165,8 +165,13 @@ async function sendOneMail(mail: string, senderMail: string, fileNames: string[]
 
 export const getAllEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userEmail = req.body.userEmail;
-        const user: userInterface = await User.findOne({ email: userEmail }).populate('emailSelected');
+        const userEmail : any = req.query.userEmail;
+
+        if(!userEmail) next(new Apperror("userEmail not missng",401));
+
+        const user: userInterface | null = await User.findOne({ email: userEmail }).populate('emailSelected');
+        
+        if(!user) next(new Apperror("User not found",404));
 
         return new ApiResponse(res, 200, "success", user.emailSelected);
 
@@ -175,34 +180,45 @@ export const getAllEmail = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
+interface dataInterface {
+    email : string,
+    currentDesignation? : string,
+    name : string
+}
+
+type postData = dataInterface;
+
 export const addEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userEmail: string = req.body.userEmail;
-        const emails: string[] = req.body.email.split(",").map((email: string) => email.trim()); 
+        const data: postData[] | null = req.body.data;
+        if (!userEmail) return next(new Apperror("no userEmail provided", 404));
+        if (!data || data.length == 0) return next(new Apperror("no data provided", 401));
 
-        const user: userInterface = await User.findOne({ email: userEmail });
+        const user: userInterface | null = await User.findOne({ email: userEmail });
 
-        if (!user) {
-            return next(new Apperror("User not found", 404));
-        }
-
-        for (const email of emails) {
-            const data = {
-                email: email,
-                currentDesignation: req.body.currentDesignation as string,
-                name: req.body.name as string
-            };
-
-            let emailFound: emailInterface | null = await Email.findOne({ email: email });
-
-            if (!emailFound) {
-                emailFound = await Email.create(data);
-                await emailFound.save();
-                user.emailSelected.push(emailFound._id);
-                await user.save();
+        if (!user) return next(new Apperror("no user found", 404));
+        console.log(data);
+        for (const value of data) {
+            
+            let email: emailInterface | null = await Email.findOne({ email: value.email });
+            if (!email) {
+                console.log(value);
+                email = await Email.create(value);
+                await email.save();
+                console.log(email._id);
+                user.emailSelected.push(email._id);
             }
-
+            else{
+                console.log("else");
+                user.emailSelected = user.emailSelected.filter((value) => {
+                    if(value.toString() !== email._id.toString()) return true;
+                });
+                user.emailSelected.push(email._id);
+            }
         }
+
+        await user.save();
 
         return new ApiResponse(res, 200, "Emails added successfully");
 

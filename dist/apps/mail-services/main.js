@@ -177,8 +177,12 @@ function sendOneMail(mail, senderMail, fileNames, subject, text, user, next) {
 }
 const getAllEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
-        const userEmail = req.body.userEmail;
+        const userEmail = req.query.userEmail;
+        if (!userEmail)
+            next(new utils_1.Apperror("userEmail not missng", 401));
         const user = yield mongo_1.User.findOne({ email: userEmail }).populate('emailSelected');
+        if (!user)
+            next(new utils_1.Apperror("User not found", 404));
         return new utils_1.ApiResponse(res, 200, "success", user.emailSelected);
     }
     catch (error) {
@@ -189,25 +193,34 @@ exports.getAllEmail = getAllEmail;
 const addEmail = (req, res, next) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     try {
         const userEmail = req.body.userEmail;
-        const emails = req.body.email.split(",").map((email) => email.trim());
+        const data = req.body.data;
+        if (!userEmail)
+            return next(new utils_1.Apperror("no userEmail provided", 404));
+        if (!data || data.length == 0)
+            return next(new utils_1.Apperror("no data provided", 401));
         const user = yield mongo_1.User.findOne({ email: userEmail });
-        if (!user) {
-            return next(new utils_1.Apperror("User not found", 404));
-        }
-        for (const email of emails) {
-            const data = {
-                email: email,
-                currentDesignation: req.body.currentDesignation,
-                name: req.body.name
-            };
-            let emailFound = yield mongo_1.Email.findOne({ email: email });
-            if (!emailFound) {
-                emailFound = yield mongo_1.Email.create(data);
-                yield emailFound.save();
-                user.emailSelected.push(emailFound._id);
-                yield user.save();
+        if (!user)
+            return next(new utils_1.Apperror("no user found", 404));
+        console.log(data);
+        for (const value of data) {
+            let email = yield mongo_1.Email.findOne({ email: value.email });
+            if (!email) {
+                console.log(value);
+                email = yield mongo_1.Email.create(value);
+                yield email.save();
+                console.log(email._id);
+                user.emailSelected.push(email._id);
+            }
+            else {
+                console.log("else");
+                user.emailSelected = user.emailSelected.filter((value) => {
+                    if (value.toString() !== email._id.toString())
+                        return true;
+                });
+                user.emailSelected.push(email._id);
             }
         }
+        yield user.save();
         return new utils_1.ApiResponse(res, 200, "Emails added successfully");
     }
     catch (error) {

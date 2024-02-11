@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import passport, { AuthenticateOptions } from "passport"; 
-import {Request , Response , NextFunction} from "express"; 
+import {Request , Response , NextFunction, urlencoded} from "express"; 
 
 import { ApiResponse, Apperror } from "@auth/utils";
 
@@ -41,8 +41,18 @@ const googleCallback  =  (req : Request ,res : Response , next : NextFunction ) 
 
 const googleSuccess = (req : any , res : Response , next : NextFunction ) => {
     try {
-        console.log(req.user)   
-        res.redirect(`${process.env.CLIENT_URL}`)
+        console.log(req.user);
+        const data = {
+            email : req.user.email,
+            name : req.user.name,
+            picture : req.user.picture
+        }   
+
+        const queryString = Object.entries(data).map(([key, val]) => `${key}=${encodeURIComponent(val)}`).join('&');
+
+        console.log(queryString);
+        res.redirect(`${process.env.CLIENT_URL}?${queryString}`);
+
     } catch (error : any) {
         return next (new Apperror(error.message , 400));
     }
