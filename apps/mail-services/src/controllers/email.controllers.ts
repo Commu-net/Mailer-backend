@@ -215,6 +215,7 @@ export const addEmail = async (req: Request, res: Response, next: NextFunction) 
                     if(value.toString() !== email._id.toString()) return true;
                 });
                 user.emailSelected.push(email._id);
+                
             }
         }
 
