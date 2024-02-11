@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../libs/mongo/src/lib/mongo.ts"],
+  "sourcesContent": ["import mongoose from \"mongoose\";\n\nmongoose.set(\"strictQuery\" ,false);\n\nconst connectToDb= async () => {\n\n    await mongoose.connect(process.env[\"MONGO_URL\"] as string)\n        .then(() => console.log(\"Connected to DB\"))\n        .catch((err) => {\n            console.log(err);\n            process.exit(1);    \n        })\n}\nexport { connectToDb}; "],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,sBAAqB;AAErB,gBAAAA,QAAS,IAAI,eAAe,KAAK;AAEjC,MAAM,cAAa,YAAY;AAE3B,QAAM,gBAAAA,QAAS,QAAQ,QAAQ,IAAI,WAAW,CAAW,EACpD,KAAK,MAAM,QAAQ,IAAI,iBAAiB,CAAC,EACzC,MAAM,CAAC,QAAQ;AACZ,YAAQ,IAAI,GAAG;AACf,YAAQ,KAAK,CAAC;AAAA,EAClB,CAAC;AACT;",
+  "names": ["mongoose"]
+}

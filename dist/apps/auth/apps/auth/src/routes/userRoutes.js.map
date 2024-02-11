@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../../apps/auth/src/routes/userRoutes.ts"],
+  "sourcesContent": ["import express, { Router , Response , Request } from \"express\";\nimport {\n  authGoogle,\n  getUserData,\n  googleCallback,\n  googleFailure,\n  googleSuccess,\n  logout,\n} from \"../controllers/user.controller\";\n\nconst router  :Router = express.Router();\n\nrouter.route(\"/\").get((req : Request, res : Response) => {\n  console.log(process.env.DOMAIN);\n  res.send(\n    `<a href=\"${process.env.DOMAIN}/api/v1/user/auth/google\" > dkjbfd </a>`\n  );\n});\nrouter.route(\"/auth/google/\")\n    .get(authGoogle);\n\nrouter.route(\"/auth/google/callback/\")\n    .get(googleCallback);\n\nrouter.route(\"/auth/google/success\")\n    .get(googleSuccess);\n\nrouter.route(\"/auth/google/failure\")\n    .get(googleFailure);\n\nrouter.route(\"/logout\")\n    .get(logout);\n\nrouter.route(\"/getuser\")\n    .get(getUserData);\n\nexport default router;"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAAqD;AACrD,kBAOO;AAEP,MAAM,SAAkB,eAAAA,QAAQ,OAAO;AAEvC,OAAO,MAAM,GAAG,EAAE,IAAI,CAAC,KAAe,QAAmB;AACvD,UAAQ,IAAI,QAAQ,IAAI,MAAM;AAC9B,MAAI;AAAA,IACF,YAAY,QAAQ,IAAI,MAAM;AAAA,EAChC;AACF,CAAC;AACD,OAAO,MAAM,eAAe,EACvB,IAAI,sBAAU;AAEnB,OAAO,MAAM,wBAAwB,EAChC,IAAI,0BAAc;AAEvB,OAAO,MAAM,sBAAsB,EAC9B,IAAI,yBAAa;AAEtB,OAAO,MAAM,sBAAsB,EAC9B,IAAI,yBAAa;AAEtB,OAAO,MAAM,SAAS,EACjB,IAAI,kBAAM;AAEf,OAAO,MAAM,UAAU,EAClB,IAAI,uBAAW;AAEpB,IAAO,qBAAQ;",
+  "names": ["express"]
+}
